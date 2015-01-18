@@ -136,7 +136,7 @@ public class Test extends PApplet {
 			text("Score: " + score, 900, 200);
 			
 			
-			fill(0, 245, 0);
+			fill(66, 255, 35);
 			//if (y > baseline)
 				//fill(255, 255, 0);
 
@@ -152,7 +152,7 @@ public class Test extends PApplet {
 	public void restart() {
 		mode = 0;
 		background(0, 225, 255);
-		fill(0, 245, 0);
+		fill(66, 255, 35);
 		stroke(0, 25, 0);
 		rect(300, 200, 600, 300);
 		rect(300, 510, 600, 200);
