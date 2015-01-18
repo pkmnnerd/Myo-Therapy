@@ -1,0 +1,114 @@
+<html>
+<head>
+	<link href="c3-0.4.8/c3.css" rel="stylesheet" type="text/css">
+
+	<script src="https://cdn.firebase.com/js/client/2.1.1/firebase.js"></script>
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+
+	<script src="c3-0.4.8/c3.min.js"></script>
+	<title>Test</title>
+</head>
+<body>
+	<div id="chart"></div>
+	<div id="list">Loading...</div>
+	<script>
+
+
+	var table = [];
+	var myDataRef = new Firebase('https://feslkjflkjfelkjlkjf.firebaseio.com/');
+	myDataRef.on('value', function(snapshot){
+		window.table= snapshot.val();
+		var obj = Object.keys(table);
+		var s = '';
+		for (var i = 0, l = obj.length;i < l;++i){
+			s+='<button id="'+obj[i]+'" onclick="myFunction(\''+ obj[i] +'\',\'' + Object.keys(table[obj[i]])[0]+ '\')">' + Object.keys(table[obj[i]])[0] + '</button></br>\n';
+		}
+//We could take average of all 8 sensors, and only plot the average
+		document.getElementById('list').innerHTML = s;
+	});
+
+function myFunction(key1, key2) {
+    //alert(window.table[key1][key2][2]);
+		// var rms=getRMSData(key1,key2);
+    // rms.unshift("RMS Data") ;
+		var avgData = getAvgData(key1,key2);
+		avgData.unshift("Avg Data");
+		// var stuff0 =  window.table[key1][key2][0];
+		// stuff0.unshift('Sensor 0');
+		//
+		// var stuff1 =  window.table[key1][key2][1];
+		// stuff1.unshift('Sensor 1');
+		//
+		// var stuff2 =  window.table[key1][key2][2];
+		// stuff2.unshift('Sensor 2');
+		//
+		// var stuff3 =  window.table[key1][key2][3];
+		// stuff3.unshift('Sensor 3');
+		//
+		// var stuff4 =  window.table[key1][key2][4];
+		// stuff4.unshift('Sensor 4');
+		//
+		// var stuff5 =  window.table[key1][key2][5];
+		// stuff5.unshift('Sensor 5');
+		//
+		// var stuff6 =  window.table[key1][key2][6];
+		// stuff6.unshift('Sensor 6');
+		//
+		// var stuff7 =  window.table[key1][key2][7];
+		// stuff7.unshift('Sensor 7');
+
+
+
+var chart = c3.generate({
+    bindto: '#chart',
+    data: {
+      columns: [
+			avgData//stuff0, stuff1, stuff2, stuff3, stuff4, stuff5, stuff6, stuff7,
+      ]
+    },
+		axis: {
+			x: {
+				label: 'mSec'
+			},
+			y: {
+				label: 'mVolts'
+			}
+		}
+});
+}
+// function getRMSData(key1,key2){
+// 	var arr = [];
+// 	for(var i=0, l = window.table[key1][key2][0].length; i < l; ++i){
+// 		arr.push(Math.sqrt((Math.pow(window.table[key1][key2][0][i],2)+Math.pow(window.table[key1][key2][1][i],2)
+// 			+Math.pow(window.table[key1][key2][2][i],2)+Math.pow(window.table[key1][key2][3][i],2)
+// 			+Math.pow(window.table[key1][key2][4][i],2)+Math.pow(window.table[key1][key2][5][i],2)
+// 			+Math.pow(window.table[key1][key2][6][i],2)+Math.pow(window.table[key1][key2][7][i],2))/6))
+// 	}
+// 	return arr;
+// }
+
+function getAvgData(key1,key2){
+	var arr = [];
+	for(var i=0, l = window.table[key1][key2][0].length; i < l; ++i){
+		arr.push((window.table[key1][key2][0][i]+window.table[key1][key2][1][i]
+		+window.table[key1][key2][2][i]+window.table[key1][key2][3][i]
+		+window.table[key1][key2][4][i]+window.table[key1][key2][5][i]
+		+window.table[key1][key2][6][i]+window.table[key1][key2][7][i])/8)
+	}
+	return arr;
+}
+
+function getMaxOfArray(nums){
+	return Math.max.apply(null, nums);
+}
+
+function getMinOfArray(nums){
+	return Math.min.apply(null, numArray);
+}
+
+
+
+</script>
+
+</body>
+</html>
