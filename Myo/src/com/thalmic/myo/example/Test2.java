@@ -17,15 +17,12 @@ import com.firebase.client.Firebase;
 import com.thalmic.myo.*;
 import com.thalmic.myo.enums.*;
 
-public class Test extends PApplet {
+public class Test2 extends PApplet {
 
 	int mode;
 	DeviceListener dataCollector;
 	Hub hub;
 	Myo myo;
-	boolean first;
-	int max;
-	int baseline;
 	Bird bird;
 	ArrayList<Pipe> a;
 	String timestamp;
@@ -45,19 +42,6 @@ public class Test extends PApplet {
 		//child = fb.child(timestamp);
 		//fb.setValue("test");
 		restart();
-		first = false;
-		max = 0;
-		baseline = 0;
-		try {
-			BufferedReader in = new BufferedReader(new FileReader(
-					"baseline.txt"));
-			baseline = Integer.parseInt(in.readLine());
-			println(baseline);
-		} catch (IOException e) {
-			first = true;
-			println("fail");
-		}
-
 		try {
 			hub = new Hub("com.example.emg-data-sample");
 
@@ -90,21 +74,14 @@ public class Test extends PApplet {
 			background(0, 225, 255);
 
 			int y = value;
-			if (value - prevValue > 30)
-				y = prevValue + 30;
-			if (prevValue - value > 30)
-				y = prevValue - 30;
+			if (value - prevValue > 4)
+				y = prevValue + 4;
+			if (prevValue - value > 4)
+				y = prevValue - 4;
 
-			
-			boolean click = false;
-			if (y >= baseline * 0.7) {
-				click = true;
-			}
-			bird.move(click);
+			bird.move(y);
 			bird.draw();
 			prevValue = y;
-			if (y > max)
-				max = y;
 
 			c++;
 			if (c > 30) {
@@ -116,7 +93,7 @@ public class Test extends PApplet {
 			}
 			if (a.get(0).getX() < 250 && a.get(0).getX() > 50) {
 				if (bird.getY() < a.get(0).getY()
-						|| bird.getY() > a.get(0).getY() + 250) {
+						|| bird.getY() > a.get(0).getY() + 150) {
 					println("lose");
 					mode = 0;
 				}
@@ -142,8 +119,8 @@ public class Test extends PApplet {
 
 			rect(0, 600 - y, 150, y);
 			//stroke(0, 0, 0, 0);
-			fill(255, 0, 0);
-			rect(0, 600 - (int) (baseline * 0.7), 150, 10);
+			//fill(255, 0, 0);
+			//rect(0, 600 - (int) (baseline * 0.7), 150, 10);
 		} else
 			restart();
 
@@ -183,13 +160,6 @@ public class Test extends PApplet {
 				//System.out.println(map);
 				fb.push().setValue(map);
 				try {
-					PrintWriter out = new PrintWriter(new BufferedWriter(
-							new FileWriter("baseline.txt")));
-					out.println(Math.max(baseline, max));
-					out.close();
-				} catch (Exception e) {
-				}
-				try {
 					Thread.sleep(2000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
@@ -207,23 +177,15 @@ public class Test extends PApplet {
 
 		public Bird() {
 			x = 200;
-			y = 400;
+			y = 300;
 		}
 
-		void move(boolean click) {
-			if (click)
-				v = -30;
-			else
-				;
-			v = v + 3;
-			y = y + v;
-			if (y > 725 || y < 0) {
-				println("lose");
-				mode = 0;
-			}
+		void move(int value) {
+			y = 800-value*4;
 		}
 
 		void draw() {
+			fill(255, 0, 0);
 			rect(x, y, 50, 50);
 		}
 
@@ -242,7 +204,6 @@ public class Test extends PApplet {
 		public Pipe() {
 			x = 1200;
 			y = (int) (Math.random() * 300) + 100;
-			// y = 200;
 			passed = false;
 		}
 		
@@ -260,8 +221,8 @@ public class Test extends PApplet {
 			rect(x, y-30, 150, 30);
 			rect(x+15, 0, 120, y-30);
 			
-			rect(x, y + 300, 150, 30);
-			rect(x+15, y+330, 120, 600);
+			rect(x, y + 200, 150, 30);
+			rect(x+15, y+230, 120, 600);
 
 		}
 

@@ -15,7 +15,7 @@
 
 
 	var table = [];
-	var myDataRef = new Firebase('https://feslkjflkjfelkjlkjf.firebaseio.com/');
+	var myDataRef = new Firebase('https://mot.firebaseio.com/');
 	myDataRef.on('value', function(snapshot){
 		window.table= snapshot.val();
 		var obj = Object.keys(table);

@@ -52,9 +52,9 @@ public class EmgDataCollector extends AbstractDeviceListener {
 			ArrayList<Integer> a = data.get(i);
 			ArrayList<Integer> a2 = new ArrayList<Integer>();
 			
-			for(int j = 6; j < a.size()-6; j+=3){
+			for(int j = 10; j < a.size()-10; j+=5){
 				int n = 0;
-				for(int k = -5; k <= 5; k++){
+				for(int k = -9; k <= 9; k++){
 					n+=a.get(j+k)*a.get(j+k);
 				}
 				a2.add((int)Math.sqrt(n/5));
