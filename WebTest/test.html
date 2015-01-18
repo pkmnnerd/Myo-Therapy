@@ -10,28 +10,31 @@
 </head>
 <body>
 	<div id="chart"></div>
+	<div id="buttons"></div>
 	<div id="list">Loading...</div>
 	<script>
 
 
 	var table = [];
-	var myDataRef = new Firebase('https://mot.firebaseio.com/');
+	var myDataRef = new Firebase('https://feslkjflkjfelkjlkjf.firebaseio.com/');
 	myDataRef.on('value', function(snapshot){
 		window.table= snapshot.val();
-		var obj = Object.keys(table);
+		var obj = Object.keys(window.table);
 		var s = '';
 		for (var i = 0, l = obj.length;i < l;++i){
-			s+='<button id="'+obj[i]+'" onclick="myFunction(\''+ obj[i] +'\',\'' + Object.keys(table[obj[i]])[0]+ '\')">' + Object.keys(table[obj[i]])[0] + '</button></br>\n';
+			s+='<button id="'+obj[i]+'" onclick="myFunction(\'' + obj[i]+ '\')">' + obj[i] + ' - Test ' + window.table[obj[i]]['test']+'</button></br>\n';
 		}
 //We could take average of all 8 sensors, and only plot the average
-		document.getElementById('list').innerHTML = s;
+		document.getElementById('list').innerHTML = s+ '<button id="trend" onclick="myFunction4()"> Show Test 0 Trend Data </button></br>\n'+
+		'<button id="trend" onclick="myFunction3()"> Show Test 1 Trend Data </button>\n';
 	});
 
-function myFunction(key1, key2) {
+function myFunction(key) {
     //alert(window.table[key1][key2][2]);
 		// var rms=getRMSData(key1,key2);
     // rms.unshift("RMS Data") ;
-		var avgData = getAvgData(key1,key2);
+    //alert(window.table[key]);
+    var avgData = window.table[key]['Averaged Data'];
 		avgData.unshift("Avg Data");
 		// var stuff0 =  window.table[key1][key2][0];
 		// stuff0.unshift('Sensor 0');
@@ -56,8 +59,8 @@ function myFunction(key1, key2) {
 		//
 		// var stuff7 =  window.table[key1][key2][7];
 		// stuff7.unshift('Sensor 7');
-
-
+var s = '<button id="raw" onclick="myFunction2(\'' + key + '\')"> Show Raw Data </button>'
+document.getElementById('buttons').innerHTML = s + '</br>\n';
 
 var chart = c3.generate({
     bindto: '#chart',
@@ -74,39 +77,116 @@ var chart = c3.generate({
 				label: 'mVolts'
 			}
 		}
+
 });
 }
-// function getRMSData(key1,key2){
-// 	var arr = [];
-// 	for(var i=0, l = window.table[key1][key2][0].length; i < l; ++i){
-// 		arr.push(Math.sqrt((Math.pow(window.table[key1][key2][0][i],2)+Math.pow(window.table[key1][key2][1][i],2)
-// 			+Math.pow(window.table[key1][key2][2][i],2)+Math.pow(window.table[key1][key2][3][i],2)
-// 			+Math.pow(window.table[key1][key2][4][i],2)+Math.pow(window.table[key1][key2][5][i],2)
-// 			+Math.pow(window.table[key1][key2][6][i],2)+Math.pow(window.table[key1][key2][7][i],2))/6))
-// 	}
-// 	return arr;
-// }
 
-function getAvgData(key1,key2){
-	var arr = [];
-	for(var i=0, l = window.table[key1][key2][0].length; i < l; ++i){
-		arr.push((window.table[key1][key2][0][i]+window.table[key1][key2][1][i]
-		+window.table[key1][key2][2][i]+window.table[key1][key2][3][i]
-		+window.table[key1][key2][4][i]+window.table[key1][key2][5][i]
-		+window.table[key1][key2][6][i]+window.table[key1][key2][7][i])/8)
+function myFunction2(key) {
+
+	//alert(window.table['myo']['Raw Data'][key]['0']);
+	 var stuff0 =  window.table[key]['Raw Sensor 0']
+	 	 stuff0.unshift('Sensor 0');
+	
+	 var stuff1 =  window.table[key]['Raw Sensor 1']
+	 stuff1.unshift('Sensor 1');
+	
+	 var stuff2 =  window.table[key]['Raw Sensor 2']
+	 stuff2.unshift('Sensor 2');
+	
+	 var stuff3 =  window.table[key]['Raw Sensor 3']
+	 stuff3.unshift('Sensor 3');
+	
+	 var stuff4 =  window.table[key]['Raw Sensor 4']
+	 stuff4.unshift('Sensor 4');
+	
+	 var stuff5 =  window.table[key]['Raw Sensor 5']
+	 stuff5.unshift('Sensor 5');
+	
+	 var stuff6 =  window.table[key]['Raw Sensor 6']
+	 stuff6.unshift('Sensor 6');
+	
+	 var stuff7 =  window.table[key]['Raw Sensor 7']
+	 stuff7.unshift('Sensor 7');
+var chart = c3.generate({
+    bindto: '#chart',
+    data: {
+      columns: [
+			stuff0, stuff1, stuff2, stuff3, stuff4, stuff5, stuff6, stuff7,
+      ]
+    },
+		axis: {
+			x: {
+				label: 'mSec'
+			},
+			y: {
+				label: 'mVolts'
+			}
+		}
+
+});
+
+document.getElementById('buttons').innerHTML = '<button id="back" onclick="myFunction(\'' +  key + '\')"">Back</button>';
+}
+
+
+
+
+function myFunction3() {
+	var values = [];
+	var obj = Object.keys(window.table);
+	var k = 0;
+	for (var i = 0; i < obj.length;i++){
+		if (window.table[obj[i]]['test'] === 1){
+			values[k] = window.table[obj[i]]['special'][0];
+			k++;
+
+
+		}
+		
+		
 	}
-	return arr;
+	values.unshift('Average');
+//alert(values);
+var chart = c3.generate({
+    bindto: '#chart',
+    data: {
+      columns: [
+			values
+      ]
+    }
+
+});
+document.getElementById('buttons').innerHTML = '';
 }
 
-function getMaxOfArray(nums){
-	return Math.max.apply(null, nums);
+function myFunction4() {
+	var values = [];
+	var obj = Object.keys(window.table);
+	var k = 0;
+	for (var i = 0; i < obj.length;i++){
+		if (window.table[obj[i]]['test'] === 0){
+			//alert(window.table[obj[i]]['special'][0]);
+			values[k] = window.table[obj[i]]['special'][0];
+			k++;
+
+
+		}
+		
+		
+	}
+	values.unshift('Average');
+//alert(values);
+var chart = c3.generate({
+    bindto: '#chart',
+    data: {
+      columns: [
+			values
+      ]
+    }
+
+});
+document.getElementById('buttons').innerHTML = '';
 }
-
-function getMinOfArray(nums){
-	return Math.min.apply(null, numArray);
-}
-
-
 
 </script>
 

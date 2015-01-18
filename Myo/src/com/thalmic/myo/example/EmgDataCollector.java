@@ -19,7 +19,7 @@ public class EmgDataCollector extends AbstractDeviceListener {
 
 	public EmgDataCollector() {
 		for (int i = 0; i < 8; i++)
-			data.put(""+ i, new ArrayList<Integer>());
+			data.put("" + i, new ArrayList<Integer>());
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class EmgDataCollector extends AbstractDeviceListener {
 		this.emgSamples = emg;
 		if (emgSamples != null) {
 			for (int i = 0; i < emgSamples.length; i++) {
-				data.get(""+ i).add((int) emgSamples[i]);
+				data.get("" + i).add((int) emgSamples[i]);
 			}
 		}
 	}
@@ -46,61 +46,145 @@ public class EmgDataCollector extends AbstractDeviceListener {
 		return Arrays.toString(emgSamples);
 	}
 
-	public HashMap<String, ArrayList<Integer>> getMap() {
+	public HashMap<String, ArrayList<Integer>>[] getMap() {
+		HashMap<String, ArrayList<Integer>>[] returnList = new HashMap[3];
 		HashMap<String, ArrayList<Integer>> data2 = new HashMap<String, ArrayList<Integer>>();
-		for(int i = 0; i < 8; i++){
-			ArrayList<Integer> a = data.get(""+i);
+		HashMap<String, ArrayList<Integer>> data3 = new HashMap<String, ArrayList<Integer>>();
+		for (int i = 0; i < 8; i++) {
+			ArrayList<Integer> a = data.get("" + i);
 			ArrayList<Integer> a2 = new ArrayList<Integer>();
-			
-			for(int j = 10; j < a.size()-10; j+=5){
+
+			for (int j = 10; j < a.size() - 10; j += 5) {
 				int n = 0;
-				for(int k = -9; k <= 9; k++){
-					n+=a.get(j+k)*a.get(j+k);
+				for (int k = -9; k <= 9; k++) {
+					n += a.get(j + k) * a.get(j + k);
 				}
-				a2.add((int)Math.sqrt(n/5));
+				a2.add((int) Math.sqrt(n / 5));
 			}
 			data2.put("Sensor " + i, a2);
-			data2.put("Raw Sensor " + i, a);
+			// data3.put("Raw Sensor " + i, a);
 		}
-		
+
 		ArrayList<Integer> a = new ArrayList<Integer>();
 		int min = 600;
 		int max = 0;
-		for(int j = 0; j < data2.get("Sensor 0").size(); j++){
+		for (int j = 0; j < data2.get("Sensor 0").size(); j++) {
 			int x = 0;
-			for(int i = 0; i < 8; i++){
-				x+= data2.get("Sensor "+ i).get(j);
+			for (int i = 0; i < 8; i++) {
+				x += data2.get("Sensor " + i).get(j);
 			}
-			x = x/8;
+			x = x / 8;
 			a.add(x);
 			if (x < min)
 				min = x;
 			if (x > max)
 				max = x;
-			
+
 		}
-		
-		int cutoff = (max*2 + min)/3;
+
+		int cutoff = (max * 2 + min) / 3;
 		ArrayList<Integer> maxes = new ArrayList<Integer>();
 		int i = 0;
-		while(i < a.size()){
+		while (i < a.size()) {
 			int max2 = 0;
-			while(a.get(i) > cutoff && i < a.size()){
+			while (i < a.size() && a.get(i) > cutoff) {
 				if (a.get(i) > max2)
 					max2 = a.get(i);
-				
+
 				i++;
-				
+
 			}
 			if (max2 > 0)
 				maxes.add(max2);
 			i++;
 		}
+
+		data3.put("Maxes", maxes);
+
+		data3.put("Averaged Data", a);
+		returnList[0] = data;
+		returnList[1] = data2;
+		returnList[2] = data3;
+		return returnList;
+	}
+
+	public HashMap<String, ArrayList<Integer>> getMap2(int call) {
+		HashMap<String, ArrayList<Integer>> data2 = new HashMap<String, ArrayList<Integer>>();
+		for (int i = 0; i < 8; i++) {
+			ArrayList<Integer> a = data.get("" + i);
+			ArrayList<Integer> a2 = new ArrayList<Integer>();
+
+			for (int j = 10; j < a.size() - 10; j += 5) {
+				int n = 0;
+				for (int k = -9; k <= 9; k++) {
+					n += a.get(j + k) * a.get(j + k);
+				}
+				a2.add((int) Math.sqrt(n / 5));
+			}
+			data2.put("Sensor " + i, a2);
+			data2.put("Raw Sensor " + i, a);
+		}
+
+		ArrayList<Integer> a = new ArrayList<Integer>();
+		int min = 600;
+		int max = 0;
+		for (int j = 0; j < data2.get("Sensor 0").size(); j++) {
+			int x = 0;
+			for (int i = 0; i < 8; i++) {
+				x += data2.get("Sensor " + i).get(j);
+			}
+			x = x / 8;
+			a.add(x);
+			if (x < min)
+				min = x;
+			if (x > max)
+				max = x;
+
+		}
+
+		int special = 0;
+		if (call == 1) {
+
+			int cutoff = (max * 2 + min) / 3;
+			ArrayList<Integer> maxes = new ArrayList<Integer>();
+			int i = 0;
+			while (i < a.size()) {
+				int max2 = 0;
+				while (i < a.size() && a.get(i) > cutoff) {
+					if (a.get(i) > max2)
+						max2 = a.get(i);
+
+					i++;
+
+				}
+				if (max2 > 0)
+					maxes.add(max2);
+				i++;
+			}
+
+			data2.put("Maxes", maxes);
+			int x = 0;
+			for(int n: maxes){
+				x+=n;
+			}
+			special = x/maxes.size();
+		} else if (call == 0){
+			int x = 0;
+			for(int n: a)
+				x+=n;
+			special = x/a.size();
+			
+			
+		}
 		
-		data2.put("Maxes", maxes);
+		ArrayList<Integer> s = new ArrayList<Integer>();
+		s.add(special);
+		data2.put("special", s);
 		
 		data2.put("Averaged Data", a);
+		
 		return data2;
+
 	}
 
 	public int getData() {

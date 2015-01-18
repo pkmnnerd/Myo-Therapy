@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.*;
 
 import processing.core.*;
@@ -41,7 +40,7 @@ public class Test extends PApplet {
 		java.util.Date date= new java.util.Date();
 		timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format( new Timestamp(date.getTime()));
 
-		fb = new Firebase("https://mot.firebaseio.com/");
+		fb = new Firebase("https://feslkjflkjfelkjlkjf.firebaseio.com/");//new Firebase("https://mot.firebaseio.com/");
 		//child = fb.child(timestamp);
 		//fb.setValue("test");
 		restart();
@@ -118,6 +117,7 @@ public class Test extends PApplet {
 				if (bird.getY() < a.get(0).getY()
 						|| bird.getY() > a.get(0).getY() + 250) {
 					println("lose");
+					myo.vibrate(VibrationType.VIBRATION_MEDIUM);
 					mode = 0;
 				}
 
@@ -179,9 +179,27 @@ public class Test extends PApplet {
 			else if (mouseX < 900 && mouseX > 300 && mouseY > 510 && mouseY < 710){
 				System.out.println("Done.");
 				Map<String, Map<String, ArrayList<Integer>>> map = new HashMap<String, Map<String, ArrayList<Integer>>>();
-				map.put(timestamp, ((EmgDataCollector) dataCollector).getMap());
+				//map.put(timestamp, ((EmgDataCollector) dataCollector).getMap());
 				//System.out.println(map);
-				fb.push().setValue(map);
+				/*
+				fb.child("rawdata").child(timestamp).setValue(((EmgDataCollector) dataCollector).getMap()[0]);//map);
+				fb.child("rawdata").child(timestamp).child("_id").child("path").setValue(timestamp);
+				fb.child("rawdata").child(timestamp).child("_timestamp").child("enabled").setValue(true);
+				fb.child("rawdata").child(timestamp).child("_timestamp").child("format").setValue("yyyy-MM-dd HH:mm:ss");
+				fb.child("rawdata").child(timestamp).child("_timestamp").child("default").setValue(timestamp);				
+				fb.child("rmsdata").child(timestamp).setValue(((EmgDataCollector) dataCollector).getMap()[1]);
+				fb.child("rmsdata").child(timestamp).child("_id").child("path").setValue(timestamp);
+				fb.child("rmsdata").child(timestamp).child("_timestamp").child("enabled").setValue(true);
+				fb.child("rmsdata").child(timestamp).child("_timestamp").child("format").setValue("yyyy-MM-dd HH:mm:ss");
+				fb.child("rmsdata").child(timestamp).child("_timestamp").child("default").setValue(timestamp);	
+				fb.child("stats").child(timestamp).setValue(((EmgDataCollector) dataCollector).getMap()[2]);
+				fb.child("stats").child(timestamp).child("_id").child("path").setValue(timestamp);
+				fb.child("stats").child(timestamp).child("_timestamp").child("enabled").setValue(true);
+				fb.child("stats").child(timestamp).child("_timestamp").child("format").setValue("yyyy-MM-dd HH:mm:ss");
+				fb.child("stats").child(timestamp).child("_timestamp").child("default").setValue(timestamp);	
+				*/
+				fb.child(timestamp).setValue(((EmgDataCollector) dataCollector).getMap2(1));
+				fb.child(timestamp).child("test").setValue(1);
 				try {
 					PrintWriter out = new PrintWriter(new BufferedWriter(
 							new FileWriter("baseline.txt")));
@@ -219,6 +237,7 @@ public class Test extends PApplet {
 			y = y + v;
 			if (y > 725 || y < 0) {
 				println("lose");
+				myo.vibrate(VibrationType.VIBRATION_MEDIUM);
 				mode = 0;
 			}
 		}

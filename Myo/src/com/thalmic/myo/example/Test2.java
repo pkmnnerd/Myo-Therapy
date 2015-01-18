@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.*;
 
 import processing.core.*;
@@ -38,7 +37,7 @@ public class Test2 extends PApplet {
 		java.util.Date date= new java.util.Date();
 		timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format( new Timestamp(date.getTime()));
 
-		fb = new Firebase("https://mot.firebaseio.com/");
+		fb = new Firebase("https://feslkjflkjfelkjlkjf.firebaseio.com/");
 		//child = fb.child(timestamp);
 		//fb.setValue("test");
 		restart();
@@ -95,6 +94,7 @@ public class Test2 extends PApplet {
 				if (bird.getY() < a.get(0).getY()
 						|| bird.getY() > a.get(0).getY() + 150) {
 					println("lose");
+					myo.vibrate(VibrationType.VIBRATION_MEDIUM);
 					mode = 0;
 				}
 
@@ -145,6 +145,7 @@ public class Test2 extends PApplet {
 		a = new ArrayList<Pipe>();
 		a.add(new Pipe());
 		c = 0;
+		prevValue = 100;
 	}
 
 	public void mouseClicked() {
@@ -155,10 +156,11 @@ public class Test2 extends PApplet {
 			}
 			else if (mouseX < 900 && mouseX > 300 && mouseY > 510 && mouseY < 710){
 				System.out.println("Done.");
-				Map<String, Map<String, ArrayList<Integer>>> map = new HashMap<String, Map<String, ArrayList<Integer>>>();
-				map.put(timestamp, ((EmgDataCollector) dataCollector).getMap());
+				//Map<String, Map<String, ArrayList<Integer>>> map = new HashMap<String, Map<String, ArrayList<Integer>>>();
+				//map.put(timestamp, ((EmgDataCollector) dataCollector).getMap());
 				//System.out.println(map);
-				fb.push().setValue(map);
+				fb.child(timestamp).setValue(((EmgDataCollector) dataCollector).getMap2(2));
+				fb.child(timestamp).child("test").setValue(2);
 				try {
 					Thread.sleep(2000);
 				} catch (InterruptedException e) {
