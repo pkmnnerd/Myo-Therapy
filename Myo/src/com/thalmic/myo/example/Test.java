@@ -178,7 +178,7 @@ public class Test extends PApplet {
 			}
 			else if (mouseX < 900 && mouseX > 300 && mouseY > 510 && mouseY < 710){
 				System.out.println("Done.");
-				Map<String, Map<Integer, ArrayList<Integer>>> map = new HashMap<String, Map<Integer, ArrayList<Integer>>>();
+				Map<String, Map<String, ArrayList<Integer>>> map = new HashMap<String, Map<String, ArrayList<Integer>>>();
 				map.put(timestamp, ((EmgDataCollector) dataCollector).getMap());
 				//System.out.println(map);
 				fb.push().setValue(map);

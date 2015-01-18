@@ -15,11 +15,11 @@ import com.thalmic.myo.Myo;
 public class EmgDataCollector extends AbstractDeviceListener {
 	private byte[] emgSamples;
 	PrintWriter out;
-	HashMap<Integer, ArrayList<Integer>> data = new HashMap<Integer, ArrayList<Integer>>();
+	HashMap<String, ArrayList<Integer>> data = new HashMap<String, ArrayList<Integer>>();
 
 	public EmgDataCollector() {
 		for (int i = 0; i < 8; i++)
-			data.put(i, new ArrayList<Integer>());
+			data.put(""+ i, new ArrayList<Integer>());
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class EmgDataCollector extends AbstractDeviceListener {
 		this.emgSamples = emg;
 		if (emgSamples != null) {
 			for (int i = 0; i < emgSamples.length; i++) {
-				data.get(i).add((int) emgSamples[i]);
+				data.get(""+ i).add((int) emgSamples[i]);
 			}
 		}
 	}
@@ -46,10 +46,10 @@ public class EmgDataCollector extends AbstractDeviceListener {
 		return Arrays.toString(emgSamples);
 	}
 
-	public HashMap<Integer, ArrayList<Integer>> getMap() {
-		HashMap<Integer, ArrayList<Integer>> data2 = new HashMap<Integer, ArrayList<Integer>>();
+	public HashMap<String, ArrayList<Integer>> getMap() {
+		HashMap<String, ArrayList<Integer>> data2 = new HashMap<String, ArrayList<Integer>>();
 		for(int i = 0; i < 8; i++){
-			ArrayList<Integer> a = data.get(i);
+			ArrayList<Integer> a = data.get(""+i);
 			ArrayList<Integer> a2 = new ArrayList<Integer>();
 			
 			for(int j = 10; j < a.size()-10; j+=5){
@@ -59,10 +59,47 @@ public class EmgDataCollector extends AbstractDeviceListener {
 				}
 				a2.add((int)Math.sqrt(n/5));
 			}
-			data2.put(i, a2);
-			data2.put(i+8, a);
+			data2.put("Sensor " + i, a2);
+			data2.put("Raw Sensor " + i, a);
 		}
 		
+		ArrayList<Integer> a = new ArrayList<Integer>();
+		int min = 600;
+		int max = 0;
+		for(int j = 0; j < data2.get("Sensor 0").size(); j++){
+			int x = 0;
+			for(int i = 0; i < 8; i++){
+				x+= data2.get("Sensor "+ i).get(j);
+			}
+			x = x/8;
+			a.add(x);
+			if (x < min)
+				min = x;
+			if (x > max)
+				max = x;
+			
+		}
+		
+		int cutoff = (max*2 + min)/3;
+		ArrayList<Integer> maxes = new ArrayList<Integer>();
+		int i = 0;
+		while(i < a.size()){
+			int max2 = 0;
+			while(a.get(i) > cutoff && i < a.size()){
+				if (a.get(i) > max2)
+					max2 = a.get(i);
+				
+				i++;
+				
+			}
+			if (max2 > 0)
+				maxes.add(max2);
+			i++;
+		}
+		
+		data2.put("Maxes", maxes);
+		
+		data2.put("Averaged Data", a);
 		return data2;
 	}
 
